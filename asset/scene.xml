@@ -1,0 +1,107 @@
+<mujoco model="ARX X5 scene">
+    <include file="fb_arx_x5/fb_arx_x5.xml" />
+
+    <statistic center="0 0 0.1" extent="0.6" />
+
+    <asset>
+        <material name="red_mat" rgba="0.545 0.141 0.141 1" />
+        <material name="green_mat" rgba="0.153 0.420 0.212 1" />
+        <material name="blue_mat" rgba="0.067 0.278 0.518 1" />
+        <material name="grey_mat" rgba="0.294 0.294 0.294 1" />
+
+        <mesh name="box" file="./box/box.obj" />
+        <texture type="2d" name="box_tex" file="./box/box_mat.png" />
+        <material name="box_mat" texture="box_tex" rgba="1 1 1 1" />
+
+        <mesh name="banana" file="./banana/banana.obj" />
+        <texture type="2d" name="banana_tex" file="./banana/banana_mat.png" />
+        <material name="banana_mat" texture="banana_tex" rgba="1 1 1 1" />
+    </asset>
+
+    <visual>
+        <headlight diffuse="0.6 0.6 0.6" ambient="0.3 0.3 0.3" specular="0 0 0" />
+        <rgba haze="0.15 0.25 0.35 1" />
+        <global azimuth="140" elevation="-20" />
+    </visual>
+
+    <asset>
+        <texture type="skybox" builtin="gradient" rgb1="0.3 0.5 0.7" rgb2="0 0 0" width="512" height="3072" />
+        <texture type="2d" name="groundplane" builtin="checker" mark="edge" rgb1="0.2 0.3 0.4" rgb2="0.1 0.2 0.3" markrgb="0.8 0.8 0.8" width="300" height="300" />
+        <material name="groundplane" texture="groundplane" texuniform="true" texrepeat="5 5" reflectance="0.2" />
+    </asset>
+
+    <worldbody>
+        <light pos="0 0 1.5" dir="0 0 -1" directional="true" />
+        <geom name="floor" size="0 0 0.05" type="plane" material="groundplane" />
+        <!-- manipulator object -->
+        <body name="box0" pos="-1.5 2.5 0.6">
+            <freejoint />
+            <inertial pos="0 0 0.05" quat="1 0 0 0" mass="0.01" diaginertia="1e-05 1e-05 1e-05" />
+            <geom mesh="box" material="box_mat" class="visual" />
+            <geom mesh="box" group="3" type="box" />
+        </body>
+        <body name="banana0" pos="-0.05 3.2 0.6">
+            <freejoint />
+            <inertial pos="0 0 0.025" quat="1 0 0 0" mass="0.089" diaginertia="1e-05 1e-05 1e-05" />
+            <geom mesh="banana" material="banana_mat" class="visual" />
+            <geom mesh="banana" group="3" type="ellipsoid" />
+        </body>
+        <body name="box1" pos="0.3 3.2 0.6">
+            <freejoint />
+            <inertial pos="0 0 0.05" quat="1 0 0 0" mass="0.01" diaginertia="1e-05 1e-05 1e-05" />
+            <geom mesh="box" material="box_mat" class="visual" />
+            <geom mesh="box" group="3" type="box" />
+        </body>
+        <body name="banana1" pos="1.3 2.5 0.6">
+            <freejoint />
+            <inertial pos="0 0 0.025" quat="1 0 0 0" mass="0.089" diaginertia="1e-05 1e-05 1e-05" />
+            <geom mesh="banana" material="banana_mat" class="visual" />
+            <geom mesh="banana" group="3" type="ellipsoid" />
+        </body>
+        <!--Main 10x10m enclosure-->
+        <geom pos="0.0 5.25 0.5" type="box" size="5.25 0.25 0.5" quat="1.0 0.0 0.0 0.0" />
+        <geom pos="0.0 -5.25 0.5" type="box" size="5.25 0.25 0.5" quat="1.0 0.0 0.0 0.0" />
+        <geom pos="5.25 0.0 0.5" type="box" size="5.25 0.25 0.5" quat="0.7071067811865476 0.0 0.0 0.7071067811865475" />
+        <geom pos="-5.25 0.0 0.5" type="box" size="5.25 0.25 0.5" quat="0.7071067811865476 0.0 0.0 0.7071067811865475" />
+        <!--Camping tables (3)-->
+        <!--0-->
+        <geom pos="-1.2 2.5 0.485" type="box" size="0.4 0.4 0.015" quat="1.0 0.0 0.0 0.0" material="black_mat" />
+        <geom pos="-0.8099999999999999 2.89 0.235" type="box" size="0.01 0.01 0.235" quat="1.0 0.0 0.0 0.0" material="black_mat" />
+        <geom pos="-0.8099999999999999 2.11 0.235" type="box" size="0.01 0.01 0.235" quat="1.0 0.0 0.0 0.0" material="black_mat" />
+        <geom pos="-1.5899999999999999 2.89 0.235" type="box" size="0.01 0.01 0.235" quat="1.0 0.0 0.0 0.0" material="black_mat" />
+        <geom pos="-1.5899999999999999 2.11 0.235" type="box" size="0.01 0.01 0.235" quat="1.0 0.0 0.0 0.0" material="black_mat" />
+        <!--1-->
+        <geom pos="0.0 3.2 0.485" type="box" size="0.4 0.4 0.015" quat="1.0 0.0 0.0 0.0" material="black_mat" />
+        <geom pos="0.39 3.5900000000000003 0.235" type="box" size="0.01 0.01 0.235" quat="1.0 0.0 0.0 0.0" material="black_mat" />
+        <geom pos="0.39 2.81 0.235" type="box" size="0.01 0.01 0.235" quat="1.0 0.0 0.0 0.0" material="black_mat" />
+        <geom pos="-0.39 3.5900000000000003 0.235" type="box" size="0.01 0.01 0.235" quat="1.0 0.0 0.0 0.0" material="black_mat" />
+        <geom pos="-0.39 2.81 0.235" type="box" size="0.01 0.01 0.235" quat="1.0 0.0 0.0 0.0" material="black_mat" />
+        <!--2-->
+        <geom pos="1.2 2.5 0.485" type="box" size="0.4 0.4 0.015" quat="1.0 0.0 0.0 0.0" material="black_mat" />
+        <geom pos="1.5899999999999999 2.89 0.235" type="box" size="0.01 0.01 0.235" quat="1.0 0.0 0.0 0.0" material="black_mat" />
+        <geom pos="1.5899999999999999 2.11 0.235" type="box" size="0.01 0.01 0.235" quat="1.0 0.0 0.0 0.0" material="black_mat" />
+        <geom pos="0.8099999999999999 2.89 0.235" type="box" size="0.01 0.01 0.235" quat="1.0 0.0 0.0 0.0" material="black_mat" />
+        <geom pos="0.8099999999999999 2.11 0.235" type="box" size="0.01 0.01 0.235" quat="1.0 0.0 0.0 0.0" material="black_mat" />
+        <!--Trash bins: red, blue, green, gray-->
+        <!--0-->
+        <geom pos="-1.5 -4.045 0.27" type="box" size="0.21999999999999997 0.015 0.27" quat="1.0 0.0 0.0 0.0" material="red_mat" />
+        <geom pos="-1.5 -4.355 0.27" type="box" size="0.21999999999999997 0.015 0.27" quat="1.0 0.0 0.0 0.0" material="red_mat" />
+        <geom pos="-1.28 -4.2 0.27" type="box" size="0.15500000000000003 0.015 0.27" quat="0.7071067811865476 0.0 0.0 0.7071067811865475" material="red_mat" />
+        <geom pos="-1.72 -4.2 0.27" type="box" size="0.15500000000000003 0.015 0.27" quat="0.7071067811865476 0.0 0.0 0.7071067811865475" material="red_mat" />
+        <!--1-->
+        <geom pos="-0.5 -4.045 0.27" type="box" size="0.21999999999999997 0.015 0.27" quat="1.0 0.0 0.0 0.0" material="blue_mat" />
+        <geom pos="-0.5 -4.355 0.27" type="box" size="0.21999999999999997 0.015 0.27" quat="1.0 0.0 0.0 0.0" material="blue_mat" />
+        <geom pos="-0.28 -4.2 0.27" type="box" size="0.15500000000000003 0.015 0.27" quat="0.7071067811865476 0.0 0.0 0.7071067811865475" material="blue_mat" />
+        <geom pos="-0.72 -4.2 0.27" type="box" size="0.15500000000000003 0.015 0.27" quat="0.7071067811865476 0.0 0.0 0.7071067811865475" material="blue_mat" />
+        <!--2-->
+        <geom pos="0.5 -4.045 0.27" type="box" size="0.21999999999999997 0.015 0.27" quat="1.0 0.0 0.0 0.0" material="green_mat" />
+        <geom pos="0.5 -4.355 0.27" type="box" size="0.21999999999999997 0.015 0.27" quat="1.0 0.0 0.0 0.0" material="green_mat" />
+        <geom pos="0.72 -4.2 0.27" type="box" size="0.15500000000000003 0.015 0.27" quat="0.7071067811865476 0.0 0.0 0.7071067811865475" material="green_mat" />
+        <geom pos="0.28 -4.2 0.27" type="box" size="0.15500000000000003 0.015 0.27" quat="0.7071067811865476 0.0 0.0 0.7071067811865475" material="green_mat" />
+        <!--3-->
+        <geom pos="1.5 -4.045 0.27" type="box" size="0.21999999999999997 0.015 0.27" quat="1.0 0.0 0.0 0.0" material="grey_mat" />
+        <geom pos="1.5 -4.355 0.27" type="box" size="0.21999999999999997 0.015 0.27" quat="1.0 0.0 0.0 0.0" material="grey_mat" />
+        <geom pos="1.72 -4.2 0.27" type="box" size="0.15500000000000003 0.015 0.27" quat="0.7071067811865476 0.0 0.0 0.7071067811865475" material="grey_mat" />
+        <geom pos="1.28 -4.2 0.27" type="box" size="0.15500000000000003 0.015 0.27" quat="0.7071067811865476 0.0 0.0 0.7071067811865475" material="grey_mat" />
+    </worldbody>
+</mujoco>

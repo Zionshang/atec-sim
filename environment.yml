@@ -1,0 +1,14 @@
+name: atec-sim
+channels:
+  - conda-forge
+  - defaults
+
+dependencies:
+  - python=3.10
+  - pip
+  - numpy
+  - mujoco
+  - opencv-python
+  - scipy
+  # - pip:
+  #     - 
