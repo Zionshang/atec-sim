@@ -37,6 +37,10 @@
     <worldbody>
         <body name="floating_base_link" pos="0 0 0.4">
             <geom type="box" size="0.4 0.19 0.1" material="black_mat" class="visual" />
+            <body name="fb_camera" pos="0.41 0 0.1">
+                <geom name="fb_camera" type="box" size="0.01 0.04 0.01" material="silver_mat" class="visual" />
+                <camera name="fb_camera" pos="0 0 0" xyaxes="0 -1 0 0 0 1" fovy="60" />
+            </body>
             <body name="base_link" pos="0.1 0 0.07">
                 <geom mesh="base_link" material="black_mat" class="visual" />
                 <geom mesh="base_link" class="collision" />
@@ -70,8 +74,8 @@
                                         <joint name="joint6" pos="0 0 0" axis="1 0 0" range="-2.1 2.1" />
                                         <geom mesh="link6" material="black_mat" class="visual" />
                                         <geom mesh="link6" class="collision" />
-                                        <body name="ee_camera_mount" pos="0.04 0 0.05">
-                                            <geom name="ee_camera_visual" type="box" size="0.01 0.04 0.01" material="silver_mat" class="visual" />
+                                        <body name="ee_camera" pos="0.04 0 0.05">
+                                            <geom name="ee_camera" type="box" size="0.01 0.04 0.01" material="silver_mat" class="visual" />
                                             <camera name="ee_camera" pos="0 0 0" xyaxes="0 -1 0 0 0 1" fovy="60" />
                                         </body>
                                         <body name="link7" pos="0.08657 0.024896 -0.0002436">

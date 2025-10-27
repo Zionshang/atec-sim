@@ -8,8 +8,7 @@ import mujoco.viewer
 from robot_control import RobotControl
 
 
-CAMERA_NAME = "ee_camera"
-WINDOW_TITLE = "End-effector Camera"
+CAMERAS = [("ee_camera", "End-effector Camera"), ("fb_camera", "Base Camera")]
 FLOATING_BASE_BODY = "floating_base_link"
 
 
@@ -23,57 +22,58 @@ def rgb_to_bgr(image, cv2_module):
 def simulate():
     cv2_module = cv2
 
-    model = mujoco.MjModel.from_xml_path('asset/scene.xml')
+    model = mujoco.MjModel.from_xml_path("asset/scene.xml")
     data = mujoco.MjData(model)
     mujoco.mj_forward(model, data)
     dt = model.opt.timestep
 
-    camera_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_CAMERA, CAMERA_NAME)
-    if camera_id < 0:
-        raise ValueError(f"Camera '{CAMERA_NAME}' not found in the model.")
+    for camera_name, _ in CAMERAS:
+        if mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_CAMERA, camera_name) < 0:
+            raise ValueError(f"Camera '{camera_name}' not found in the model.")
 
     base_control = RobotControl(model, data, FLOATING_BASE_BODY)
     key_mapping = {
-        ord('w'): np.array([0.05, 0.0, 0.0]),
-        ord('s'): np.array([-0.05, 0.0, 0.0]),
-        ord('a'): np.array([0.0, 0.05, 0.0]),
-        ord('d'): np.array([0.0, -0.05, 0.0]),
-        ord('r'): np.array([0.0, 0.0, 0.05]),
-        ord('f'): np.array([0.0, 0.0, -0.05]),
+        ord("w"): np.array([0.05, 0.0, 0.0]),
+        ord("s"): np.array([-0.05, 0.0, 0.0]),
+        ord("a"): np.array([0.0, 0.05, 0.0]),
+        ord("d"): np.array([0.0, -0.05, 0.0]),
+        ord("r"): np.array([0.0, 0.0, 0.05]),
+        ord("f"): np.array([0.0, 0.0, -0.05]),
     }
     yaw_map = {
-        ord('q'): 0.1,
-        ord('e'): -0.1,
+        ord("q"): 0.1,
+        ord("e"): -0.1,
     }
 
-    renderer = mujoco.Renderer(model)
-    renderer.update_scene(data, camera=CAMERA_NAME)
-
-    initial_image = renderer.render()
-    bgr_frame = rgb_to_bgr(initial_image, cv2_module)
-
-    cv2_module.namedWindow(WINDOW_TITLE, cv2_module.WINDOW_AUTOSIZE)
-    cv2_module.imshow(WINDOW_TITLE, bgr_frame)
+    renderers = {name: mujoco.Renderer(model) for name, _ in CAMERAS}
+    for name, title in CAMERAS:
+        renderer = renderers[name]
+        renderer.update_scene(data, camera=name)
+        frame = rgb_to_bgr(renderer.render(), cv2_module)
+        cv2_module.namedWindow(title, cv2_module.WINDOW_AUTOSIZE)
+        cv2_module.imshow(title, frame)
     cv2_module.waitKey(1)
 
     with mujoco.viewer.launch_passive(model, data) as viewer:
         while viewer.is_running():
             loop_start = time.perf_counter()
- 
+
             mujoco.mj_step(model, data)
 
-            renderer.update_scene(data, camera=CAMERA_NAME)
-            camera_frame = renderer.render()
-            bgr_frame = rgb_to_bgr(camera_frame, cv2_module)
-            cv2_module.imshow(WINDOW_TITLE, bgr_frame)
+            for name, title in CAMERAS:
+                renderer = renderers[name]
+                renderer.update_scene(data, camera=name)
+                camera_frame = renderer.render()
+                bgr_frame = rgb_to_bgr(camera_frame, cv2_module)
+                cv2_module.imshow(title, bgr_frame)
             key = cv2_module.waitKey(1) & 0xFF
-            if key == ord('0'):
+            if key == ord("0"):
                 base_control.reset_base_pose()
             elif key in key_mapping:
                 base_control.move_relative(key_mapping[key])
             elif key in yaw_map:
                 base_control.yaw_relative(yaw_map[key])
-            if cv2_module.getWindowProperty(WINDOW_TITLE, cv2_module.WND_PROP_VISIBLE) < 1:
+            if all(cv2_module.getWindowProperty(title, cv2_module.WND_PROP_VISIBLE) < 1 for _, title in CAMERAS):
                 break
 
             viewer.sync()
@@ -82,8 +82,11 @@ def simulate():
             if elapsed < dt:
                 time.sleep(dt - elapsed)
 
-    cv2_module.destroyWindow(WINDOW_TITLE)
+    for _, title in CAMERAS:
+        if cv2_module.getWindowProperty(title, cv2_module.WND_PROP_VISIBLE) >= 0:
+            cv2_module.destroyWindow(title)
     cv2_module.waitKey(1)
- 
+
+
 if __name__ == "__main__":
     simulate()
