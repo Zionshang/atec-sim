@@ -35,8 +35,8 @@
     </asset>
 
     <worldbody>
-        <body name="floating_base_link" pos="0 0 0.1">
-            <geom type="box" size="0.2 0.2 0.1" material="black_mat" class="visual" />
+        <body name="floating_base_link" pos="0 0 0.4">
+            <geom type="box" size="0.4 0.19 0.1" material="black_mat" class="visual" />
             <body name="base_link" pos="0.1 0 0.07">
                 <geom mesh="base_link" material="black_mat" class="visual" />
                 <geom mesh="base_link" class="collision" />

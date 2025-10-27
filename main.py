@@ -42,8 +42,8 @@ def simulate():
         ord('f'): np.array([0.0, 0.0, -0.05]),
     }
     yaw_map = {
-        ord('j'): -0.1,
-        ord('l'): 0.1,
+        ord('q'): 0.1,
+        ord('e'): -0.1,
     }
 
     renderer = mujoco.Renderer(model)
@@ -67,8 +67,6 @@ def simulate():
             bgr_frame = rgb_to_bgr(camera_frame, cv2_module)
             cv2_module.imshow(WINDOW_TITLE, bgr_frame)
             key = cv2_module.waitKey(1) & 0xFF
-            if key == ord('q'):
-                break
             if key == ord('0'):
                 base_control.reset_base_pose()
             elif key in key_mapping:
