@@ -12,16 +12,14 @@ CAMERAS = [("ee_camera", "End-effector Camera"), ("fb_camera", "Base Camera")]
 FLOATING_BASE_BODY = "floating_base_link"
 
 
-def rgb_to_bgr(image, cv2_module):
+def rgb_to_bgr(image):
     if image.dtype != np.uint8:
         image = np.clip(image, 0.0, 1.0)
         image = (image * 255).astype(np.uint8)
-    return cv2_module.cvtColor(image, cv2_module.COLOR_RGB2BGR)
+    return cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
 
 def simulate():
-    cv2_module = cv2
-
     model = mujoco.MjModel.from_xml_path("asset/scene.xml")
     data = mujoco.MjData(model)
     mujoco.mj_forward(model, data)
@@ -49,10 +47,10 @@ def simulate():
     for name, title in CAMERAS:
         renderer = renderers[name]
         renderer.update_scene(data, camera=name)
-        frame = rgb_to_bgr(renderer.render(), cv2_module)
-        cv2_module.namedWindow(title, cv2_module.WINDOW_AUTOSIZE)
-        cv2_module.imshow(title, frame)
-    cv2_module.waitKey(1)
+        frame = rgb_to_bgr(renderer.render())
+        cv2.namedWindow(title, cv2.WINDOW_AUTOSIZE)
+        cv2.imshow(title, frame)
+    cv2.waitKey(1)
 
     with mujoco.viewer.launch_passive(model, data) as viewer:
         while viewer.is_running():
@@ -64,16 +62,16 @@ def simulate():
                 renderer = renderers[name]
                 renderer.update_scene(data, camera=name)
                 camera_frame = renderer.render()
-                bgr_frame = rgb_to_bgr(camera_frame, cv2_module)
-                cv2_module.imshow(title, bgr_frame)
-            key = cv2_module.waitKey(1) & 0xFF
+                bgr_frame = rgb_to_bgr(camera_frame)
+                cv2.imshow(title, bgr_frame)
+            key = cv2.waitKey(1) & 0xFF
             if key == ord("0"):
                 base_control.reset_base_pose()
             elif key in key_mapping:
                 base_control.move_relative(key_mapping[key])
             elif key in yaw_map:
                 base_control.yaw_relative(yaw_map[key])
-            if all(cv2_module.getWindowProperty(title, cv2_module.WND_PROP_VISIBLE) < 1 for _, title in CAMERAS):
+            if all(cv2.getWindowProperty(title, cv2.WND_PROP_VISIBLE) < 1 for _, title in CAMERAS):
                 break
 
             viewer.sync()
@@ -83,9 +81,9 @@ def simulate():
                 time.sleep(dt - elapsed)
 
     for _, title in CAMERAS:
-        if cv2_module.getWindowProperty(title, cv2_module.WND_PROP_VISIBLE) >= 0:
-            cv2_module.destroyWindow(title)
-    cv2_module.waitKey(1)
+        if cv2.getWindowProperty(title, cv2.WND_PROP_VISIBLE) >= 0:
+            cv2.destroyWindow(title)
+    cv2.waitKey(1)
 
 
 if __name__ == "__main__":
