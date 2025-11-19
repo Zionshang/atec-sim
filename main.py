@@ -30,13 +30,13 @@ def simulate():
             raise ValueError(f"Camera '{camera_name}' not found in the model.")
 
     base_control = RobotControl(model, data, FLOATING_BASE_BODY)
-    key_mapping = {
-        ord("w"): np.array([0.05, 0.0, 0.0]),
-        ord("s"): np.array([-0.05, 0.0, 0.0]),
-        ord("a"): np.array([0.0, 0.05, 0.0]),
-        ord("d"): np.array([0.0, -0.05, 0.0]),
-        ord("r"): np.array([0.0, 0.0, 0.05]),
-        ord("f"): np.array([0.0, 0.0, -0.05]),
+    x_velocity_map = {
+        ord("w"): 0.05,
+        ord("s"): -0.05,
+    }
+    y_velocity_map = {
+        ord("a"): 0.05,
+        ord("d"): -0.05,
     }
     yaw_map = {
         ord("q"): 0.1,
@@ -57,6 +57,7 @@ def simulate():
             loop_start = time.perf_counter()
 
             mujoco.mj_step(model, data)
+            base_control.update_motion()
 
             for name, title in CAMERAS:
                 renderer = renderers[name]
@@ -67,10 +68,16 @@ def simulate():
             key = cv2.waitKey(1) & 0xFF
             if key == ord("0"):
                 base_control.reset_base_pose()
-            elif key in key_mapping:
-                base_control.move_relative(key_mapping[key])
+            elif key == ord(" "):
+                base_control.set_x_velocity(0.0)
+                base_control.set_y_velocity(0.0)
+                base_control.set_yaw_velocity(0.0)
+            elif key in x_velocity_map:
+                base_control.set_x_velocity(x_velocity_map[key])
+            elif key in y_velocity_map:
+                base_control.set_y_velocity(y_velocity_map[key])
             elif key in yaw_map:
-                base_control.yaw_relative(yaw_map[key])
+                base_control.set_yaw_velocity(yaw_map[key])
             if all(cv2.getWindowProperty(title, cv2.WND_PROP_VISIBLE) < 1 for _, title in CAMERAS):
                 break
 
