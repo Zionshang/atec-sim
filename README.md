@@ -1,26 +1,21 @@
-# ATEC Simulation Quickstart
+# ATEC Simulation
 
 ## Setup
-```bash
+```
 conda env update -f environment.yml
 conda activate atec-sim
 ```
 
-## Run the Demo
-```bash
+## Run
+```
 python main.py
 ```
-This launches three windows:
-1. The standard MuJoCo viewer for the full scene.
-2. An OpenCV window titled **End-effector Camera** (wrist-mounted view).
-3. An OpenCV window titled **Base Camera** (floating-base view).
+This starts the MuJoCo viewer and two OpenCV camera windows (end-effector + base). After the scripted actions run, close the viewer to stop the simulator.
 
-## Keyboard Controls (focus the camera window first)
-- `w / s`: Translate forward / backward in the robot's local frame.
-- `a / d`: Translate left / right.
-- `r / f`: Translate up / down.
-- `q / e`: Yaw rotation (left / right) of the floating base.
-- `0`: Reset the floating base pose to its initial state.
-- Close both camera windows to stop the simulation loop.
-
-The `robot_control.py` helper applies these moves by directly modifying the floating base ("god mode"), which is why no MuJoCo actuator is required.
+### Call Actions
+Inside `main.py` the simulator runs in a separate process. Create an `ActionExecutor` with the provided context and call:
+```python
+executor.set_position({"delta_x": 0.3, "delta_y": 0.0, "delta_yaw": 0.2})
+executor.set_velocity({"vx": 0.1, "vy": -0.05, "yaw_rate": -0.1, "duration": 1.5})
+```
+Velocities are expressed in the local frame
